@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Guard X</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="icons/icon48.png" alt="Threat Guard X Logo" class="logo">
+            <h1>Threat Guard X</h1>
+        </div>
+        
+        <div class="current-site">
+            <p id="currentUrl">Checking current website...</p>
+        </div>
+
+        <div class="scan-section">
+            <button id="scanButton" class="scan-btn">
+                <span class="btn-icon">🔍</span>
+                Scan Website
+            </button>
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <span>Scanning...</span>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection" style="display: none;">
+            <div class="result-card" id="resultCard">
+                <div class="status-icon" id="statusIcon"></div>
+                <h2 id="statusTitle">Scan Result</h2>
+                <p id="statusDescription" class="status-description"></p>
+                
+                <div class="details" id="details">
+                    <div class="detail-item">
+                        <span class="detail-label">Security Score:</span>
+                        <span class="detail-value" id="securityScore">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Threats Detected:</span>
+                        <span class="detail-value" id="threatsCount">0</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Last Updated:</span>
+                        <span class="detail-value" id="lastUpdated">-</span>
+                    </div>
+                </div>
+                
+                <button id="downloadBtn" class="download-btn">
+                    <span class="btn-icon">📄</span>
+                    Download PDF Report
+                </button>
+            </div>
+        </div>
+
+        <!-- New: Raw Data Section -->
+        <div class="raw-data-section">
+            <button id="toggleRawDataBtn" class="raw-data-toggle-btn">
+                <span class="btn-icon">🔬</span> View Raw Data
+            </button>
+            <div id="rawDataContent" class="raw-data-content" style="display: none;">
+                <pre id="rawDataPre"></pre>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Powered by HackenSUS</p>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

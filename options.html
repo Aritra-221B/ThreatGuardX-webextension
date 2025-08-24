@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Threat Guard X - Settings</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; }
+        .setting-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"] { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #45a049; }
+        .status { margin-top: 10px; padding: 10px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        a { color: #007bff; }
+    </style>
+</head>
+<body>
+    <h1>Threat Guard X Settings</h1>
+    
+    <div class="setting-group">
+        <label for="googleApiKey">Google Safe Browsing API Key:</label>
+        <input type="text" id="googleApiKey" placeholder="Enter your Google Safe Browsing API key">
+        <div class="info">
+            <p>Get your free API key from <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a></p>
+            <p>Enable the "Safe Browsing API" and create credentials → API key</p>
+        </div>
+    </div>
+    
+    <div class="setting-group">
+        <label for="virusTotalApiKey">VirusTotal API Key:</label>
+        <input type="text" id="virusTotalApiKey" placeholder="Enter your VirusTotal API key">
+        <div class="info">
+            <p>Get your free API key from <a href="https://www.virustotal.com/gui/join-us" target="_blank">VirusTotal</a></p>
+            <p>Free tier: 4 requests/minute, 500 requests/day</p>
+        </div>
+    </div>
+    
+    <button id="saveButton">Save Settings</button>
+    
+    <div id="status" class="status" style="display: none;"></div>
+    
+    <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+
+## Technical Details
+
+- **Manifest Version**: 3 (latest Chrome extension standard)
+- **Permissions**: activeTab, scripting (minimal required permissions)
+- **Libraries Used**:
+  - jsPDF: PDF generation
+  - html2canvas: Screenshot capabilities (for future features)
+
+## Development Notes
+
+- The extension uses a mock API for demonstration purposes
+- Real-world implementation would connect to actual safe browsing APIs
+- PDF reports include comprehensive security analysis
+- Responsive design works on all screen sizes
+
+## Browser Compatibility
+
+- ✅ Google Chrome
+- ✅ Microsoft Edge
+- ✅ Brave Browser
+- ⚠️ Firefox (may require minor adjustments)
+
+## Security Considerations
+
+- Only requests active tab URL (no browsing history access)
+- No data is stored or transmitted to external servers
+- All processing happens locally in the browser
+
+## Future Enhancements
+
+- Integration with real safe browsing APIs (Google Safe Browsing, etc.)
+- Historical scan results
+- Custom security thresholds
+- Batch website scanning
+- Export multiple reports
+
+## Support
+
+For issues or questions, please check the browser's developer console for error messages.
+
+---
+
+**Disclaimer**: This extension is for educational purposes and uses simulated data. Always use multiple security tools for comprehensive protection.

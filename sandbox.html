@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Sandbox</title>
+    <script src="lib/jspdf.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <script>
+        console.log('sandbox.html: Script loaded.');
+        window.addEventListener('message', async function(event) {
+            console.log('sandbox.html: Received message:', event.data);
+            // Only accept messages from our extension
+            if (event.source !== window.parent || !event.data || event.data.type !== 'generatePdf') {
+                console.log('sandbox.html: Ignoring message or not a generatePdf message from parent.');
+                return;
+            }
+
+            console.log('sandbox.html: Received generatePdf message. Payload:', event.data.payload);
+            const { currentUrl, scanResult } = event.data.payload;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Professional Header 
+            doc.setFillColor(41, 98, 255);
+            doc.rect(0, 0, 210, 45, 'F');
+            
+            // Main title - properly centered
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text('WEBSITE SECURITY ANALYSIS REPORT', 105, 18, { align: 'center' });
+            
+            // Generated text right after main heading
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Generated: ${new Date().toLocaleString()}`, 105, 28, { align: 'center' });
+            
+            // Professional Security Assessment text
+            doc.setFontSize(10);
+            doc.text('Professional Security Assessment', 105, 38, { align: 'center' });
+
+            // Website Info Box
+            doc.setFillColor(248, 249, 250);
+            doc.roundedRect(15, 55, 180, 25, 3, 3, 'F');
+            doc.setDrawColor(220, 220, 220);
+            doc.roundedRect(15, 55, 180, 25, 3, 3, 'S');
+            
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('TARGET WEBSITE:', 25, 65);
+            
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(41, 98, 255);
+            const displayUrl = currentUrl.replace(/^https?:\/\//, '').replace(/^www\./, '');
+            doc.text(displayUrl, 25, 72);
+
+            // Executive Summary Box
+            doc.setFillColor(255, 255, 255);
+            doc.roundedRect(15, 90, 180, 45, 5, 5, 'F');
+            doc.setDrawColor(200, 200, 200);
+            doc.roundedRect(15, 90, 180, 45, 5, 5, 'S');
+            
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('EXECUTIVE SUMMARY', 105, 102, { align: 'center' });
+            
+            // Large Status Indicator based on overallRiskLevel
+            let statusText = '';
+            let statusBgColor = [];
+            let statusTextColor = [255, 255, 255]; // Always white for readability
+
+            switch (scanResult.overallRiskLevel) {
+                case 'Safe':
+                    statusText = 'SECURE';
+                    statusBgColor = [46, 204, 113]; // Green
+                    break;
+                case 'Low Risk':
+                    statusText = 'LOW RISK';
+                    statusBgColor = [255, 193, 7]; // Amber/Orange
+                    break;
+                case 'High Risk':
+                    statusText = 'HIGH RISK';
+                    statusBgColor = [231, 76, 60]; // Red
+                    break;
+                case 'Vulnerable':
+                    statusText = 'VULNERABLE';
+                    statusBgColor = [156, 39, 176]; // Purple
+                    break;
+                default:
+                    statusText = 'UNKNOWN';
+                    statusBgColor = [149, 165, 166]; // Gray
+                    break;
+            }
+
+            doc.setFillColor(...statusBgColor);
+            doc.roundedRect(25, 110, 70, 18, 3, 3, 'F');
+            doc.setTextColor(...statusTextColor);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text(statusText, 60, 122, { align: 'center' });
+
+            // Score Circle
+            const centerX = 150;
+            const centerY = 119;
+            const radius = 15;
+            
+            // Outer ring
+            doc.setFillColor(240, 240, 240);
+            doc.circle(centerX, centerY, radius, 'F');
+            
+            // Inner score circle
+            const scoreColor = scanResult.securityScore >= 80 ? [46, 204, 113] : 
+                             scanResult.securityScore >= 60 ? [255, 193, 7] : [231, 76, 60];
+            doc.setFillColor(...scoreColor);
+            doc.circle(centerX, centerY, radius * 0.75, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`${scanResult.securityScore}`, centerX, centerY + 1, { align: 'center' });
+            doc.setFontSize(8);
+            doc.text('SCORE', centerX, centerY + 8, { align: 'center' });
+
+            // Security Metrics Section
+            doc.setFillColor(245, 245, 245);
+            doc.rect(15, 145, 180, 30, 'F');
+            doc.setDrawColor(220, 220, 220);
+            doc.rect(15, 145, 180, 30, 'S');
+            
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('KEY METRICS', 25, 155);
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.text(`Security Score: ${scanResult.securityScore}/100`, 25, 165);
+            doc.text(`Threats Detected: ${scanResult.threatsDetected}`, 110, 165);
+            doc.text(`Scan Date: ${new Date().toLocaleDateString()}`, 25, 172);
+            doc.text(`Report ID: SR-${Date.now().toString().slice(-6)}`, 110, 172);
+
+            // Detailed Findings Section
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('DETAILED FINDINGS', 25, 190);
+            
+            let yPosition = 205;
+            if (scanResult.safe) {
+                // Recommendations box for safe sites
+                doc.setFillColor(248, 255, 248);
+                doc.roundedRect(15, yPosition - 5, 180, Math.min(scanResult.recommendations.length * 8 + 15, 60), 3, 3, 'F');
+                doc.setDrawColor(46, 204, 113);
+                doc.roundedRect(15, yPosition - 5, 180, Math.min(scanResult.recommendations.length * 8 + 15, 60), 3, 3, 'S');
+                
+                doc.setTextColor(39, 174, 96);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('SECURITY RECOMMENDATIONS', 25, yPosition + 3);
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9);
+                doc.setTextColor(60, 60, 60);
+                yPosition += 15;
+                
+                scanResult.recommendations.forEach((rec, index) => {
+                    if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 30;
+                        
+                        // Redraw the background box on the new page
+                        doc.setFillColor(248, 255, 248);
+                        doc.roundedRect(15, yPosition - 5, 180, Math.min((scanResult.recommendations.length - index) * 8 + 15, 60), 3, 3, 'F');
+                        doc.setDrawColor(46, 204, 113);
+                        doc.roundedRect(15, yPosition - 5, 180, Math.min((scanResult.recommendations.length - index) * 8 + 15, 60), 3, 3, 'S');
+                    }
+                    doc.setTextColor(39, 174, 96);
+                    doc.text('-', 30, yPosition);
+                    doc.setTextColor(60, 60, 60);
+                    doc.text(rec.substring(0, 80) + (rec.length > 80 ? '...' : ''), 35, yPosition);
+                    yPosition += 8;
+                });
+            } else {
+                // Warning box for unsafe sites
+                doc.setFillColor(255, 248, 248);
+                doc.roundedRect(15, yPosition - 5, 180, Math.min(scanResult.warnings.length * 8 + 15, 60), 3, 3, 'F');
+                doc.setDrawColor(231, 76, 60);
+                doc.roundedRect(15, yPosition - 5, 180, Math.min(scanResult.warnings.length * 8 + 15, 60), 3, 3, 'S');
+                
+                doc.setTextColor(192, 57, 43);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('SECURITY WARNINGS', 25, yPosition + 3);
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9);
+                doc.setTextColor(60, 60, 60);
+                yPosition += 15;
+                
+                scanResult.warnings.forEach((warning, index) => {
+                    if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 30;
+                        
+                        // Redraw the background box on the new page
+                        doc.setFillColor(255, 248, 248);
+                        doc.roundedRect(15, yPosition - 5, 180, Math.min((scanResult.warnings.length - index) * 8 + 15, 60), 3, 3, 'F');
+                        doc.setDrawColor(231, 76, 60);
+                        doc.roundedRect(15, yPosition - 5, 180, Math.min((scanResult.warnings.length - index) * 8 + 15, 60), 3, 3, 'S');
+                    }
+                    doc.setTextColor(192, 57, 43);
+                    doc.text('-', 30, yPosition);
+                    doc.setTextColor(60, 60, 60);
+                    doc.text(warning.substring(0, 60) + (warning.length > 60 ? '...' : ''), 35, yPosition);
+                    yPosition += 8;
+                });
+            }
+
+            // Professional Footer
+            doc.setFillColor(248, 249, 250);
+            doc.rect(0, 275, 210, 22, 'F');
+            
+            // Footer line
+            doc.setDrawColor(41, 98, 255);
+            doc.setLineWidth(2);
+            doc.line(15, 277, 195, 277);
+            
+            doc.setTextColor(100, 100, 100);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text('CONFIDENTIAL SECURITY REPORT', 20, 285);
+            let pageWidth = doc.internal.pageSize.getWidth();
+            doc.text('Generated by Threat Guard X', pageWidth / 2, 292, { align: 'center' });
+
+            
+            doc.text('Report Date: ' + new Date().toLocaleDateString(), 150, 285);
+
+            // Send the PDF data back to the main extension
+            const pdfData = doc.output('datauristring');
+            console.log('sandbox.html: PDF generated, sending back to parent.');
+            window.parent.postMessage({ type: 'pdfGenerated', payload: { pdfData: pdfData, currentUrl: currentUrl } }, '*');
+        });
+    </script>
+</body>
+</html>
