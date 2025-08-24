@@ -33,3 +33,4 @@ A comprehensive browser extension that checks website safety and generates detai
 5. Click "Download PDF Report" to get a detailed security analysis
 
 ## File Structure
+"# ThreatGuardX-webextension" 
