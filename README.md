@@ -36,3 +36,4 @@ A comprehensive browser extension that checks website safety and generates detai
 "# ThreatGuardX-webextension" 
 # ThreatGuardX-webextension
 # ThreatGuardX-webextension
+# ThreatGuardX-webextension
